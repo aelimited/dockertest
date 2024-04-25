@@ -20,4 +20,10 @@ public class IndexController {
         return ResponseEntity.ok().body("welcome");
     }
 
+
+    @GetMapping("why")
+    public ResponseEntity<String> why() {
+        return ResponseEntity.ok().body("why");
+    }
+
 }
