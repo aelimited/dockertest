@@ -1,0 +1,60 @@
+name: docker-test
+
+on:
+  push:
+    branches:
+      - main
+
+permissions: write-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set Up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+
+
+      - name: Add permission
+        run: chmod +x gradlew
+
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Clean before Build
+        run: ./gradlew clean
+
+      - name: Docker Build & Push
+        run: |
+          docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build --platform linux/amd64 -t ${{ secrets.DOCKER_REPO }} .
+          docker push ${{ secrets.DOCKER_REPO }}
+
+      - name: SSH Connection & Deploy
+        uses: appleboy/ssh-action@master
+        env:
+          APP: "docker-test"
+          COMPOSE: "/home/ubuntu/compose/docker-compose.yml"
+        with:
+          username: ubuntu
+          host: ${{ secrets.EC2_HOST }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          envs: APP, COMPOSE
+          script_stop: true
+          script: |
+            sudo docker-compose -f $COMPOSE down
+            sudo docker pull ${{ secrets.DOCKER_REPO }}
+            sudo docker-compose -f $COMPOSE up -d
