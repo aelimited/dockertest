@@ -25,5 +25,9 @@ public class IndexController {
     public ResponseEntity<String> why() {
         return ResponseEntity.ok().body("why");
     }
+    @GetMapping("hh")
+    public ResponseEntity<String> hh() {
+        return ResponseEntity.ok().body("hh");
+    }
 
 }
