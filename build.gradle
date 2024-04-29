@@ -26,6 +26,25 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    //
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+    implementation 'org.springframework.boot:spring-boot-devtools'
+    //소켓
+//    implementation 'org.springframework:spring-websocket:5.3.14'
+
+    //thymeleaf
+    implementation'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+    //redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+
+
+
 }
 
 tasks.named('test') {
